@@ -39,13 +39,19 @@
   background-color: #1a1a1a;
   text-align: left;
 }
+
 .card h3 {
-  margin: 5px 0;
+  margin: 5px;
 }
+
 .card a {
-  margin: 3px 0;
+  margin: 5px;
 }
 
 .read-the-docs {
   color: #888;
+}
+
+.deletebutton {
+  background-color: #D93900;;
 }

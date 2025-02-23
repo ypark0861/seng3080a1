@@ -1,44 +1,56 @@
-import { useState } from 'react'
-import starLogo from '../assets/star.svg'
+// FILE : favorite.jsx
+// PROGRAMMER : Yujung Park
+// FIRST VERSION : 2025-02-20
+// DESCRIPTION : this favorite.jsx is a component for the user's favorites list display 
+import { useEffect, useState, useLayoutEffect } from 'react'
 import starfillLogo from '../assets/starfill.svg'
 
-const Favorite = ({favoritepost }) => {
+const Favorite = (props) => {
     const baseurl = "https://www.reddit.com"
-    const [usersfavorites, setUsersFavorites] = useState([])
+    const [usersfavs, setUsersFavorites] = useState(props.favposts)
+    // const [usersfavs, setUsersFavorites] = useState(null)
+    useLayoutEffect(() => {
+        // setUsersFavorites(props.usersfavs)
+        console.log("layouteff", props.usersfaves)
+    }, []);
+   
+    const deleteFavorite = (id) => {
+        let resfind = usersfavs.find((element) => element.id === id)
+        const sessiontoobj = JSON.parse(sessionStorage.getItem("favorites"))
 
-    const handleFavorite = (uid, subreddit) => {
-        console.log(uid, subreddit)
-        let resfind = usersfavorites.find((element) => element.id === uid)
         if(resfind !== undefined) {
-            setUsersFavorites(
-                usersfavorites.filter(favorite => favorite.id !== uid)
-            )            
-        } else {
-            setUsersFavorites([
-                ...usersfavorites, 
-                { id: uid, value: subreddit }
-            ])
+            setUsersFavorites(usersfavs.filter(favorite => favorite.id !== id))                  
+            const updatedsession = sessiontoobj.filter(favid => favid.id !== id);
+            // sessionStorage.setItem("favorites", JSON.stringify(updatedsession))
         }
-        sessionStorage.setItem("favorites", JSON.stringify(usersfavorites))
-        console.log(sessionStorage.getItem("favorites"));
+        console.log("Session-after", sessionStorage.getItem("favorites"));
+    }
+
+    const getFavorites = () => {
+        setUsersFavorites(props.usersfavs)
+        console.log("getfavorites", props.usersfaves)
     }
 
     return (
-    <div >
-        {favoritepost.map(post => (
+    <div> 
+        <button onClick={() => getFavorites()}>My favorites</button>
+        {usersfavs?.map(post => (
             <div key={post.id} >
                 <div className="card">
-                    <h3>TITLE : { post.link_title }</h3>
-                    <img src={
-                        usersfavorites.find((element) => element.id === post.id) ? 
-                        starfillLogo : starLogo}
-                        width={30} 
-                        onClick={() => handleFavorite(post.id, post.value)} />                    
-                    <p>SCORE : { post.score }</p>
-                    <a href = {baseurl + post.permalink} target="_blank"></a>
+                    <table>
+                    <tbody>
+                    <tr>
+                    <td><img src={starfillLogo} width={30} onClick={() => deleteFavorite(post.id)} /></td>
+                    <td><h3>TITLE : { post.post.data.children[0].data.link_title }</h3></td>
+                    </tr>
+                    </tbody>
+                    </table>
+                    <p>SCORE : { post.post.data.children[0].data.score }</p>
+                    <a href = {baseurl + post.post.data.children[0].data.permalink} target="_blank">{ baseurl + post.post.data.children[0].data.permalink }</a>
                 </div>
             </div>
         ))}
+
     </div>
     );
 }
